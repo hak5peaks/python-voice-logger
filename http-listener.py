@@ -2,6 +2,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import os
 import sys
+from datetime import datetime
 
 sys.stderr = open(os.devnull, 'w')
 
@@ -11,8 +12,12 @@ class RequestHandler(BaseHTTPRequestHandler):
         post_data = self.rfile.read(content_length)
         data = json.loads(post_data.decode('utf-8'))
         recognized_text = data.get('text', 'Unknown')
+        current_time = datetime.now().strftime("%m/%d/%Y - %H:%M")
+        print(f"Recognized text: {recognized_text} - {current_time}")
 
-        print(f"Recognized text: {recognized_text}")
+        with open('logs.txt', 'a') as log_file:
+            log_file.write(f"Recognized text: {recognized_text} - {current_time}\n")
+
         self.send_response(200)
         self.end_headers()
 
