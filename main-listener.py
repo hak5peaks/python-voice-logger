@@ -4,9 +4,11 @@ import time
 import logging
 import os
 
+
 def save_data_to_file(data, filename):
     with open(filename, 'a') as file:
         file.write(data + '\n')
+
 
 def auto_detect_and_transcribe(server_url, unsent_data_filename):
     r = sr.Recognizer()
@@ -14,7 +16,8 @@ def auto_detect_and_transcribe(server_url, unsent_data_filename):
     with sr.Microphone() as source:
         print("Listening for microphone input... Press Ctrl+C to exit.")
         try:
-            audio = r.listen(source, timeout=10)  # Set Listening time (10 seconds)
+            # Set Listening time (10 seconds)
+            audio = r.listen(source, timeout=10)
             text = r.recognize_google(audio)
             print(f"Detected speech: {text}")
 
@@ -37,11 +40,12 @@ def auto_detect_and_transcribe(server_url, unsent_data_filename):
             print("Exiting the script.")
             exit()
 
+
 def send_unsent_data(server_url, unsent_data_filename):
     try:
         with open(unsent_data_filename, 'r') as file:
             unsent_data = file.readlines()
-        
+
         for data in unsent_data:
             data = data.strip()
             data = {'text': data}
@@ -51,16 +55,16 @@ def send_unsent_data(server_url, unsent_data_filename):
                     print(f"Data '{data}' sent successfully to the server.")
                 else:
                     print(f"Failed to send data '{data}' to the server.")
-                    return  
+                    return
             except requests.exceptions.ConnectionError:
                 print(f"Connection to the server failed for data '{data}'.")
-                return  
-
+                return
 
         open(unsent_data_filename, 'w').close()
         os.remove(unsent_data_filename)
     except FileNotFoundError:
         print(f"'{unsent_data_filename}' does not exist. No unsent data to send.")
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
